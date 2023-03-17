@@ -1,5 +1,8 @@
 name: Delete Environment
 
+permissions:
+  id-token: write
+
 on:
   delete:
   pull_request:
@@ -26,8 +29,6 @@ jobs:
       ENVIRONMENT_TYPE: ${{ needs.config.outputs.type }}
 
     steps:
-      - uses: actions/checkout@v3
-
       - name: Install DevCenter CLI Extension
         run: az extension add --name devcenter --upgrade
 

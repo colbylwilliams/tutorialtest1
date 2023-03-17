@@ -1,5 +1,9 @@
 name: Create Environment
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   create:
   pull_request:

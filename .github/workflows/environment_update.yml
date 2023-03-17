@@ -1,5 +1,9 @@
 name: Update Environment
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
     paths:
@@ -53,7 +57,8 @@ jobs:
 
           if [ $? -eq 0 ]; then
               echo "ENVIRONMENT_GROUP=$environment_rg" >> $GITHUB_ENV
-          elif [[ $environment_rg =~ "EnvironmentCannotBeFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
+          elif [[ $environment_rg =~ "EnvironmentCannotBeFound" ]]; then
+          # elif [[ $environment_rg =~ "EnvironmentCannotBeFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
 
               # Prod (main) environment may not be created yet
               environment_rg=$(az devcenter dev environment create \
