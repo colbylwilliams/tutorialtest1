@@ -39,8 +39,8 @@ namespace ADE.Tutorial
             foreach (var timeZone in timeZones)
                 response.WriteString($"\n{(timeZone.IsDaylightSavingTime(now) ? timeZone.DaylightName : timeZone.StandardName)}: {TimeZoneInfo.ConvertTimeFromUtc(now, timeZone)}");
 
-            return response;
 
+            return response;
         }
     }
 }
