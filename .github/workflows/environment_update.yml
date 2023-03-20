@@ -56,13 +56,19 @@ jobs:
               --only-show-errors --query resourceGroupId --output tsv 2>&1)
 
           if [ $? -eq 0 ]; then
+              echo "Found environment ${{ env.ENVIRONMENT_NAME }} resource group: $environment_rg"
+
               environment_group=${environment_rg##*/}
+              echo "  Resource Group: $environment_group"
+
               environment_sub=${environment_rg%/resourceGroups*}
               environment_sub=${environment_sub##*/}
+              echo "  Subscription: $environment_sub"
 
               echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
               echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
           elif [[ $environment_rg =~ "EnvironmentCannotBeFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
+              echo "Environment ${{ env.ENVIRONMENT_NAME }} not found, creating..."
 
               # Prod (main) environment may not be created yet
               environment_rg=$(az devcenter dev environment create \
@@ -73,16 +79,23 @@ jobs:
                   --query resourceGroupId --output tsv 2>&1)
 
               if [ $? -eq 0 ]; then
+                  echo "Created environment ${{ env.ENVIRONMENT_NAME }} with resource group: $environment_rg"
+
                   environment_group=${environment_rg##*/}
+                  echo "  Resource Group: $environment_group"
+
                   environment_sub=${environment_rg%/resourceGroups*}
                   environment_sub=${environment_sub##*/}
+                  echo "  Subscription: $environment_sub"
 
                   echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
                   echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
               else
+                  echo "Failed to create environment ${{ env.ENVIRONMENT_NAME }}"
                   echo "::error::az devcenter dev environment create command failed: $environment_rg"; exit 1
               fi
           else
+              echo "Failed to get environment ${{ env.ENVIRONMENT_NAME }}"
               echo "::error::az devcenter dev environment show command failed: $environment_rg"; exit 1
           fi
 
