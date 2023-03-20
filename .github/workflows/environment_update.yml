@@ -1,4 +1,4 @@
-name: Update Environment
+name: Environment Update
 
 permissions:
   id-token: write
@@ -23,7 +23,7 @@ jobs:
 
   update_env:
     if: github.event_name == 'pull_request' || (contains(github.event.ref, 'refs/heads') && !github.event.created)
-    name: Update Environment
+    name: Update ${{ needs.config.outputs.type }} Environment
     runs-on: ubuntu-latest
 
     needs: config
@@ -49,7 +49,7 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Get Environment Resource Group
+      - name: Get Resource Group
         shell: bash {0}
         run: |
           echo "Getting environment ${{ env.ENVIRONMENT_NAME }}..."

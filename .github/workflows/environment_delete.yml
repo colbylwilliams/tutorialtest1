@@ -1,4 +1,4 @@
-name: Delete Environment
+name: Environment Delete
 
 permissions:
   id-token: write
@@ -18,7 +18,7 @@ jobs:
 
   delete_env:
     if: github.event_name == 'pull_request' || github.event.ref_type == 'branch'
-    name: Delete Environment
+    name: Delete ${{ needs.config.outputs.type }} Environment
     runs-on: ubuntu-latest
 
     needs: config
