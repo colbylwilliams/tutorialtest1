@@ -68,7 +68,7 @@ jobs:
 
               echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
               echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
-          elif [[ $environment_rg =~ "EnvironmentCannotBeFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
+          elif [[ $environment_rg =~ "EnvironmentCannotBeFound" || $environment_rg =~ "EnvironmentNotFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
               echo "Environment ${{ env.ENVIRONMENT_NAME }} not found, creating..."
 
               # Prod (main) environment may not be created yet
