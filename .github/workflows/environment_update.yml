@@ -52,53 +52,39 @@ jobs:
       - name: Get Environment Resource Group
         shell: bash {0}
         run: |
+          echo "Getting environment ${{ env.ENVIRONMENT_NAME }}..."
           environment_rg=$(az devcenter dev environment show --name ${{ env.ENVIRONMENT_NAME }} \
               --dev-center ${{ vars.AZURE_DEVCENTER }} --project ${{ vars.AZURE_PROJECT }} \
               --only-show-errors --query resourceGroupId --output tsv 2>&1)
 
-          if [ $? -eq 0 ]; then
-              echo "Found environment ${{ env.ENVIRONMENT_NAME }} resource group: $environment_rg"
-
-              environment_group=${environment_rg##*/}
-              echo "  Resource Group: $environment_group"
-
-              environment_sub=${environment_rg%/resourceGroups*}
-              environment_sub=${environment_sub##*/}
-              echo "  Subscription: $environment_sub"
-
-              echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
-              echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
-          elif [[ $environment_rg =~ "EnvironmentCannotBeFound" || $environment_rg =~ "EnvironmentNotFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
-              echo "Environment ${{ env.ENVIRONMENT_NAME }} not found, creating..."
-
+          if [ $? -ne 0 ]; then
               # Prod (main) environment may not be created yet
-              environment_rg=$(az devcenter dev environment create \
-                  --name ${{ env.ENVIRONMENT_NAME }} --environment-type ${{ env.ENVIRONMENT_TYPE }} \
-                  --dev-center ${{ vars.AZURE_DEVCENTER }} --project ${{ vars.AZURE_PROJECT }} \
-                  --catalog-name ${{ vars.AZURE_CATALOG }} --catalog-item-name ${{ vars.AZURE_CATALOG_ITEM }} \
-                  --parameters '{ "name": "${{ env.ENVIRONMENT_NAME }}" }' --only-show-errors \
-                  --query resourceGroupId --output tsv 2>&1)
+              if [[ $environment_rg =~ "EnvironmentCannotBeFound" || $environment_rg =~ "EnvironmentNotFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
+                  echo "Environment ${{ env.ENVIRONMENT_NAME }} not found, creating..."
 
-              if [ $? -eq 0 ]; then
-                  echo "Created environment ${{ env.ENVIRONMENT_NAME }} with resource group: $environment_rg"
+                  environment_rg=$(az devcenter dev environment create \
+                      --name ${{ env.ENVIRONMENT_NAME }} --environment-type ${{ env.ENVIRONMENT_TYPE }} \
+                      --dev-center ${{ vars.AZURE_DEVCENTER }} --project ${{ vars.AZURE_PROJECT }} \
+                      --catalog-name ${{ vars.AZURE_CATALOG }} --catalog-item-name ${{ vars.AZURE_CATALOG_ITEM }} \
+                      --parameters '{ "name": "${{ env.ENVIRONMENT_NAME }}" }' --only-show-errors \
+                      --query resourceGroupId --output tsv 2>&1)
 
-                  environment_group=${environment_rg##*/}
-                  echo "  Resource Group: $environment_group"
-
-                  environment_sub=${environment_rg%/resourceGroups*}
-                  environment_sub=${environment_sub##*/}
-                  echo "  Subscription: $environment_sub"
-
-                  echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
-                  echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
+                  if [ $? -ne 0 ]; then
+                      echo "Failed to create environment ${{ env.ENVIRONMENT_NAME }}"
+                      echo "::error::az devcenter dev environment create command failed: $environment_rg"; exit 1
+                  fi
               else
-                  echo "Failed to create environment ${{ env.ENVIRONMENT_NAME }}"
-                  echo "::error::az devcenter dev environment create command failed: $environment_rg"; exit 1
+                  echo "Failed to get environment ${{ env.ENVIRONMENT_NAME }}"
+                  echo "::error::az devcenter dev environment show command failed: $environment_rg"; exit 1
               fi
-          else
-              echo "Failed to get environment ${{ env.ENVIRONMENT_NAME }}"
-              echo "::error::az devcenter dev environment show command failed: $environment_rg"; exit 1
           fi
+
+          environment_group=${environment_rg##*/}
+          environment_sub=${environment_rg%/resourceGroups*}
+          environment_sub=${environment_sub##*/}
+
+          echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
+          echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
 
       - name: Deploy ADE.Tutorial
         run: |
