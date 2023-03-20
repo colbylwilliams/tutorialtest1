@@ -40,7 +40,6 @@ namespace ADE.Tutorial
                 response.WriteString($"\n{(timeZone.IsDaylightSavingTime(now) ? timeZone.DaylightName : timeZone.StandardName)}: {TimeZoneInfo.ConvertTimeFromUtc(now, timeZone)}");
 
             return response;
-
         }
     }
 }
