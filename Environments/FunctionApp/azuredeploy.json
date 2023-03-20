@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.15.31.15270",
-      "templateHash": "5659836567409425056"
+      "templateHash": "135257884104161714"
     }
   },
   "parameters": {
@@ -63,7 +63,7 @@
       "python": "PYTHON|3.10"
     },
     "resourceName": "[if(not(empty(parameters('name'))), replace(parameters('name'), ' ', '-'), format('a{0}', uniqueString(resourceGroup().id)))]",
-    "storageAcctName": "[toLower(replace(variables('resourceName'), '-', ''))]"
+    "storageAcctName": "[take(toLower(replace(replace(variables('resourceName'), '-', ''), '_', '')), 24)]"
   },
   "resources": [
     {
