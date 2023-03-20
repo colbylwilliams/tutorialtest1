@@ -29,10 +29,6 @@ jobs:
       ENVIRONMENT_NAME: ${{ needs.config.outputs.name }}
       ENVIRONMENT_TYPE: ${{ needs.config.outputs.type }}
 
-    permissions:
-      issues: write
-      pull-requests: write
-
     steps:
       - uses: actions/checkout@v3
 
