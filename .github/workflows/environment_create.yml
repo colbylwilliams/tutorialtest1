@@ -1,5 +1,9 @@
 name: Create Environment
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   create:
   pull_request:
@@ -60,7 +64,12 @@ jobs:
               --only-show-errors --query resourceGroupId --output tsv 2>&1)
 
           if [ $? -eq 0 ]; then
-              echo "ENVIRONMENT_GROUP=$environment_rg" >> $GITHUB_ENV
+              environment_group=${environment_rg##*/}
+              environment_sub=${environment_rg%/resourceGroups*}
+              environment_sub=${environment_sub##*/}
+
+              echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
+              echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
           else
               echo "::error::az devcenter dev environment show command failed: $environment_rg"; exit 1
           fi
@@ -68,4 +77,4 @@ jobs:
       - name: Deploy ADE.Tutorial
         run: |
           az functionapp deployment source config-zip --name ${{ env.ENVIRONMENT_NAME }} --src publish.zip \
-              --resource-group ${{ env.ENVIRONMENT_GROUP }}
+              --subscription ${{ env.ENVIRONMENT_SUB }} --resource-group ${{ env.ENVIRONMENT_GROUP }}

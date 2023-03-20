@@ -1,5 +1,9 @@
 name: Update Environment
 
+permissions:
+  id-token: write
+  contents: read
+
 on:
   push:
     paths:
@@ -52,7 +56,12 @@ jobs:
               --only-show-errors --query resourceGroupId --output tsv 2>&1)
 
           if [ $? -eq 0 ]; then
-              echo "ENVIRONMENT_GROUP=$environment_rg" >> $GITHUB_ENV
+              environment_group=${environment_rg##*/}
+              environment_sub=${environment_rg%/resourceGroups*}
+              environment_sub=${environment_sub##*/}
+
+              echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
+              echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
           elif [[ $environment_rg =~ "EnvironmentCannotBeFound" ]] && [[ "$ENVIRONMENT_TYPE" == "Prod" ]]; then
 
               # Prod (main) environment may not be created yet
@@ -64,7 +73,12 @@ jobs:
                   --query resourceGroupId --output tsv 2>&1)
 
               if [ $? -eq 0 ]; then
-                  echo "ENVIRONMENT_GROUP=$environment_rg" >> $GITHUB_ENV
+                  environment_group=${environment_rg##*/}
+                  environment_sub=${environment_rg%/resourceGroups*}
+                  environment_sub=${environment_sub##*/}
+
+                  echo "ENVIRONMENT_GROUP=$environment_group" >> $GITHUB_ENV
+                  echo "ENVIRONMENT_SUB=$environment_sub" >> $GITHUB_ENV
               else
                   echo "::error::az devcenter dev environment create command failed: $environment_rg"; exit 1
               fi
@@ -75,4 +89,4 @@ jobs:
       - name: Deploy ADE.Tutorial
         run: |
           az functionapp deployment source config-zip --name ${{ env.ENVIRONMENT_NAME }} --src publish.zip \
-              --resource-group ${{ env.ENVIRONMENT_GROUP }}
+              --subscription ${{ env.ENVIRONMENT_SUB }} --resource-group ${{ env.ENVIRONMENT_GROUP }}
