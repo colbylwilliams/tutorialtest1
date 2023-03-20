@@ -2,7 +2,7 @@
 #  1. Create a consistant name for the deployment environment
 #  2. Determine the environment type for the environment
 
-name: Environment Config
+name: Configuration
 
 on:
   workflow_call:

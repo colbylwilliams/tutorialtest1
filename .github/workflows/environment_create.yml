@@ -1,4 +1,4 @@
-name: Environment Create
+name: Create Environment
 
 permissions:
   id-token: write
@@ -14,7 +14,7 @@ concurrency: ${{ github.event.number || github.ref_name }}
 jobs:
   config:
     if: github.event_name == 'pull_request' || github.event.ref_type == 'branch'
-    name: Get Environment
+    name: Get Configuration
     uses: ./.github/workflows/environment_config.yml
 
   create_env:
