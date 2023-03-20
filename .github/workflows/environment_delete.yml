@@ -42,4 +42,4 @@ jobs:
       - name: Delete Environment
         run: |
           az devcenter dev environment delete --name ${{ env.ENVIRONMENT_NAME }} \
-              --dev-center ${{ vars.AZURE_DEVCENTER }} --project ${{ vars.AZURE_PROJECT }}
+              --dev-center ${{ vars.AZURE_DEVCENTER }} --project ${{ vars.AZURE_PROJECT }} --yes
