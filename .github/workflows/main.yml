@@ -7,3 +7,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - run: env
+      - uses: colbylwilliams/deployment-environments-setup@main
