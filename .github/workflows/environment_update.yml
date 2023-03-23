@@ -37,6 +37,8 @@ jobs:
     environment: ${{ needs.setup.outputs.type }}
 
     steps:
+      - run: echo "${{ needs.setup.outputs.type }}"
+
       - uses: actions/checkout@v3
 
       - name: Build ADE.Tutorial
