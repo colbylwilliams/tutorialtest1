@@ -6,12 +6,12 @@ permissions:
 
 on:
   push:
-    paths:
-      - 'ADE.Tutorial/**'
+  # paths:
+  #   - 'ADE.Tutorial/**'
   pull_request:
     types: [synchronize]
-    paths:
-      - 'ADE.Tutorial/**'
+    # paths:
+    #   - 'ADE.Tutorial/**'
 
 concurrency: ${{ github.event.number || github.ref_name }}
 
