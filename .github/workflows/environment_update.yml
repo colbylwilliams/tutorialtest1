@@ -41,8 +41,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Build ADE.Tutorial
-      #   run: dotnet publish ./ADE.Tutorial -c Release -o ./publish && (cd ./publish && zip -r ../publish.zip .)
+      - name: Build ADE.Tutorial
+        run: dotnet publish ./ADE.Tutorial -c Release -o ./publish && (cd ./publish && zip -r ../publish.zip .)
 
       - name: Az CLI login
         uses: azure/login@v1
