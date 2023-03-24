@@ -116,3 +116,7 @@ local.parameters.json
 
 publish
 publish.zip
+
+local
+.local
+DS_Store
