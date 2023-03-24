@@ -53,6 +53,8 @@ jobs:
           action: create
           parameters: '{ "name": "${{ needs.setup.outputs.name }}" }'
 
+      - run: env
+
       # - name: Deploy ADE.Tutorial
       #   run: |
       #     az functionapp deployment source config-zip --name ${{ needs.setup.outputs.name }} --src publish.zip \
