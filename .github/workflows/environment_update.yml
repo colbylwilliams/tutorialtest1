@@ -6,12 +6,12 @@ permissions:
 
 on:
   push:
-  # paths:
-  #   - 'ADE.Tutorial/**'
+    paths:
+      - 'ADE.Tutorial/**'
   pull_request:
     types: [synchronize]
-    # paths:
-    #   - 'ADE.Tutorial/**'
+    paths:
+      - 'ADE.Tutorial/**'
 
 concurrency: ${{ github.event.number || github.ref_name }}
 
@@ -41,8 +41,8 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      # - name: Build ADE.Tutorial
-      #   run: dotnet publish ./ADE.Tutorial -c Release -o ./publish && (cd ./publish && zip -r ../publish.zip .)
+      - name: Build ADE.Tutorial
+        run: dotnet publish ./ADE.Tutorial -c Release -o ./publish && (cd ./publish && zip -r ../publish.zip .)
 
       - name: Az CLI login
         uses: azure/login@v1
@@ -58,10 +58,10 @@ jobs:
           action: ensure
           parameters: '{ "name": "${{ needs.setup.outputs.name }}" }'
 
-      # - name: Deploy ADE.Tutorial
-      #   run: |
-      #     az functionapp deployment source config-zip --name ${{ needs.setup.outputs.name }} --src publish.zip \
-      #         --subscription ${{ steps.update.outputs.subscription }} --resource-group ${{ steps.update.outputs.resource-group }}
+      - name: Deploy ADE.Tutorial
+        run: |
+          az functionapp deployment source config-zip --src publish.zip \
+            --subscription $ADE_SUBSCRIPTION --resource-group $ADE_RESOURCE_GROUP --name $ADE_NAME
 
-      #     echo "- [View environment resources in the Azure portal](${{ needs.setup.outputs.portal-url }})" >> $GITHUB_STEP_SUMMARY
-      #     echo "- [View the deployed API](https://${{ needs.setup.outputs.name }}.azurewebsites.net/api/time)" >> $GITHUB_STEP_SUMMARY
+          echo "- [View environment resources in the Azure portal]($ADE_PORTAL_URL)" >> $GITHUB_STEP_SUMMARY
+          echo "- [View the deployed API](https://$ADE_NAME.azurewebsites.net/api/time)" >> $GITHUB_STEP_SUMMARY
