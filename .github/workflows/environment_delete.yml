@@ -45,3 +45,5 @@ jobs:
         uses: colbylwilliams/deployment-environments@main
         with:
           action: delete
+
+      - run: env
